@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import Axios from 'axios';
+import { useHistory } from 'react-router-dom';
 
 const Forms = () => {
   const [state, setstate] = useState({
     username: '',
-    password: '',
-    department: ''
+    password: ''
   });
   const [signup, setsignup] = useState(false);
+  const { push } = useHistory();
 
   const handlechange = e => {
     e.preventDefault();
@@ -15,6 +17,24 @@ const Forms = () => {
 
   const handleSubmit = e => {
     e.preventDefault();
+    Axios.post('http://localhost:5000/api/auth/login', state)
+      .then(res => {
+        console.log(res, `success`);
+        localStorage.setItem('token', res.data.token);
+        push(`/users`);
+      })
+      .catch(err => console.log(err));
+  };
+  const handleSubmitSignup = e => {
+    e.preventDefault();
+    Axios.post('http://localhost:5000/api/auth/register', state)
+      .then(
+        res =>
+          alert('Sign up successful') &
+          console.log(res) &
+          window.location.reload(false)
+      )
+      .catch(err => console.log(err));
   };
 
   return (
@@ -34,10 +54,9 @@ const Forms = () => {
               <span className='signup' onClick={() => setsignup(!signup)}>
                 here
               </span>
-            </span>{' '}
+            </span>
           </h1>
-          <form style={{ display: 'flex' }}>
-            <br />
+          <form onSubmit={handleSubmit}>
             <label>
               username {console.log(state)}
               <input
@@ -56,7 +75,7 @@ const Forms = () => {
                 onChange={handlechange}
               />
             </label>
-            <label>
+            {/* <label>
               department
               <input
                 name='department'
@@ -64,7 +83,7 @@ const Forms = () => {
                 type='text'
                 onChange={handlechange}
               />
-            </label>
+            </label> */}
             <input type='submit' />
           </form>
         </>
@@ -80,7 +99,7 @@ const Forms = () => {
             </span>
           </h1>
 
-          <form style={{ display: 'flex' }}>
+          <form onSubmit={handleSubmitSignup}>
             <label>
               username {console.log(state)}
               <input
